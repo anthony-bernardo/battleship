@@ -16,14 +16,14 @@ export default class Sea{
             switch(ship.orientation){
                 case Orientation.HORIZONTAL:
                     if(!this.checkShipInBound(ship, position.y + i)){
-                        throw Error(`${ship.name} is out of the sea !`);
+                        throw Error(`ship is out of the sea !`);
                     }
                     this._seaMatrix[position.x][position.y + i] = 1; 
                     break;
 
                 case Orientation.VERTICAL:
                     if(!this.checkShipInBound(ship, position.x + i)){
-                        throw Error(`${ship.name} is out of the sea !`);
+                        throw Error(`ship is out of the sea !`);
                     }
                     this._seaMatrix[position.x + i][position.y] = 1; 
                     break;
