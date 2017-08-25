@@ -11,8 +11,24 @@ import {
   Text,
   View
 } from 'react-native';
+import Sea from './src/objects/Sea.js';
+import Ship from './src/objects/Ship.js';
+import Position from './src/objects/Position.js';
+import Orientation from './src/objects/Orientation.js';
 
 export default class BattleShip extends Component {
+
+  constructor(){
+    super();
+
+    const sea = new Sea(5, 5);
+    const ship1 = new Ship('Petit bateau', 5, Orientation.HORIZONTAL);
+
+    // place the boat at position 0, 1
+    sea.placeShip(ship1, new Position(4, 0)); 
+    console.log(sea.seaMatrix);
+  }
+
   render() {
     return (
       <View style={styles.container}>
