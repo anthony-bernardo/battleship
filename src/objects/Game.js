@@ -1,6 +1,7 @@
 import ShipFactory from './ShipFactory.js';
 import ShipType from './ShipType.js';
 import Sea from './Sea.js';
+import GameState from './GameState.js';
 import GameSettings from './GameSettings.js';
 
 export default class Game{
@@ -8,6 +9,7 @@ export default class Game{
         if(player1.id == player2.id){
             throw new Error('2 differents players needed');
         }
+        this._stateOfGame = GameState.SETUP;
         // players
         this._player1 = player1;
         this._player2 = player2;
@@ -20,7 +22,10 @@ export default class Game{
         this._shipsTypeToPlace[player1.id] = Object.assign({}, GameSettings.shipsToPlace);
         this._shipsTypeToPlace[player2.id] = Object.assign({}, GameSettings.shipsToPlace);
     }
-    playerPlaceShip(player, shipType, orientation, position){
+    placeShip(player, shipType, orientation, position){
+        if(this._stateOfGame !== GameState.SETUP){
+            throw Error(`you cannot place ship, game has started`);
+        }
         // check if this shipType can be placed
         if(this._shipsTypeToPlace[player.id][shipType] == 0){
             throw new Error('player cannot place this boat on more time');
@@ -46,5 +51,12 @@ export default class Game{
                 throw new Error('The players have not placed all the ships');
             }
         });
+        // change the state
+        this._stateOfGame = GameState.STARTED;
+    }
+    fireAtPosition(player, position){
+        if(this._stateOfGame !== GameState.STARTED){
+            throw Error(`you cannot fire at position, game has not started`);
+        }
     }
 }

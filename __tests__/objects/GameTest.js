@@ -17,10 +17,10 @@ beforeEach(() => {
     player1 = new Player(1001, 'Anthony');
     player2 = new Player(1002, 'Patrice');
     game = new Game(player1, player2, 10);
-    /*game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(2, 4)); // todo player has to place all ships
-    game.playerPlaceShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 1));
-    game.playerPlaceShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(2, 4)); // todo player has to place all ships
-    game.playerPlaceShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 1));
+    /*game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(2, 4)); // todo player has to place all ships
+    game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 1));
+    game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(2, 4)); // todo player has to place all ships
+    game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 1));
     game.playerReady(player1);
     game.playerReady(player2); // wait until all players are ready
     game.whichPlayerTurn();
@@ -41,30 +41,47 @@ describe('Game()', () => {
     });
 });    
 
-describe('playerPlaceShip()', () => {
+describe('placeShip()', () => {
 
   test('dont throw error if players place ship on the same place on their sea', () => {
     expect(() => {
-        game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-        game.playerPlaceShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
     }).not.toThrow();
   });
 
   test('throw error if player place 2 times the LITTLE ship', () => {
     expect(() => {
-        game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-        game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player1, ShipType.LITTLE, Orientation.HORIZONTAL, new Position(4, 4)); 
     }).toThrow('player cannot place this boat on more time');
   });
 
   test('throw error if player place 2 times the BIG ship', () => {
     expect(() => {
-        game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-        game.playerPlaceShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
-        game.playerPlaceShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
-        game.playerPlaceShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
-        game.playerPlaceShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(5, 0)); 
+        game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+        game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(5, 0)); 
     }).toThrow('player cannot place this boat on more time');
+  });
+
+  test('when player try to place a ship when game state is not SETUP, throw exception', () => {
+    expect(() => {
+        game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+
+        game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+
+      game.startGame();
+      game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+    }).toThrow('you cannot place ship, game has started');
   });
 
 });
@@ -72,15 +89,15 @@ describe('playerPlaceShip()', () => {
 describe('startGame()', () => {
     test('players place all the ships, so the game can begin', () => {
         expect(() => {
-            game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-            game.playerPlaceShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
-            game.playerPlaceShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
-            game.playerPlaceShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+            game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+            game.placeShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+            game.placeShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+            game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
 
-            game.playerPlaceShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-            game.playerPlaceShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
-            game.playerPlaceShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
-            game.playerPlaceShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+            game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+            game.placeShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+            game.placeShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+            game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
 
             game.startGame();
         }).not.toThrow();
@@ -88,17 +105,33 @@ describe('startGame()', () => {
 
     test('throw error if players have missed a ship', () => {
         expect(() => {
-            game.playerPlaceShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-            game.playerPlaceShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
-            game.playerPlaceShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
-            game.playerPlaceShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+            game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+            game.placeShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+            game.placeShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+            game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
             
-            game.playerPlaceShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
-            game.playerPlaceShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
-            game.playerPlaceShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3));
+            game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+            game.placeShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+            game.placeShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3));
             /// players2 miss the BIG 
 
             game.startGame();
         }).toThrow('The players have not placed all the ships');
+    });
+
+    test('at start, the game state must be SETUP', () => {
+        pending('pending test');
+    });
+
+    test('when game has been launch, the game state must be STARTED', () => {
+        pending('pending test');
+    });
+});
+
+describe('fireAtPosition()', () => {
+    test('when player try to fire when game state is not STARTED, throw exception', () => {
+        expect(() => {
+            game.fireAtPosition(player1, new Position(0, 0));
+        }).toThrow('you cannot fire at position, game has not started');
     });
 });

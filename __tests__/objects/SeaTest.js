@@ -52,27 +52,18 @@ describe('placeShip()', () => {
     }).toThrow('there is already a ship here !');
   });
 
-  test('when stateOfGame is not SETUP, throw exception', () => {
-    expect(() => {
-      sea.startTheGame();
-      sea.placeShip(bigShip, new Position(0, 0));
-    }).toThrow('you cannot place ship !');
-  });
-
 });
 
 describe('fireAtPosition()', () => {
 
   test('return HITTEN_SEA if fire miss the ship', () => {
     sea.placeShip(littleShip, new Position(0, 0));
-    sea.startTheGame();
     const fireResult = sea.fireAtPosition(new Position(0, 2));
     expect(fireResult).toBe(CellState.HITTEN_SEA);
   });
 
   test('return HITTEN_SHIP if fire hit a ship', () => {
     sea.placeShip(littleShip, new Position(0, 0));
-    sea.startTheGame();
     const fireResult = sea.fireAtPosition(new Position(0, 0));
     expect(fireResult).toBe(CellState.HITTEN_SHIP);
   });
@@ -80,26 +71,17 @@ describe('fireAtPosition()', () => {
   test('when try to hit a previously hit position, throw an exception', () => {
     expect(() => {
       sea.placeShip(littleShip, new Position(0, 0));
-      sea.startTheGame();
       sea.fireAtPosition(new Position(3, 3));
       sea.fireAtPosition(new Position(3, 3));
     }).toThrow('you have already hit this position');
   });
-
 
   test('when try to hit a previously ship hit position, throw an exception', () => {
     expect(() => {
       sea.placeShip(littleShip, new Position(0, 0));
-      sea.startTheGame();
       sea.fireAtPosition(new Position(0, 0));
       sea.fireAtPosition(new Position(0, 0));
     }).toThrow('you have already hit this position');
-  });
-
-  test('when stateOfGame is not STARTED, throw exception', () => {
-    expect(() => {
-      sea.fireAtPosition(new Position(0, 0));
-    }).toThrow('you cannot fire at position !');
   });
 
 });
