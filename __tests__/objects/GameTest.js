@@ -129,9 +129,44 @@ describe('startGame()', () => {
 });
 
 describe('fireAtPosition()', () => {
+    beforeEach(() => {
+        game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+
+        game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+    });
+    
+    test('each player can fire 3 times', () => {
+        expect(() => {
+            game.startGame(player1);
+
+            game.fireAtPosition(player1, new Position(0, 0));
+            game.fireAtPosition(player1, new Position(0, 1));
+            game.fireAtPosition(player1, new Position(0, 2));
+            
+            game.fireAtPosition(player2, new Position(0, 0));
+            game.fireAtPosition(player2, new Position(0, 1));
+            game.fireAtPosition(player2, new Position(0, 2));
+        }).not.toThrow();
+    });
+
     test('when player try to fire when game state is not STARTED, throw exception', () => {
         expect(() => {
+            game = new Game(player1, player2, 10);     
+            // missing startGame       
             game.fireAtPosition(player1, new Position(0, 0));
         }).toThrow('you cannot fire at position, game has not started');
+    });
+   
+    test('when player try to fire but it is not his turn, throw exception', () => {
+        expect(() => {
+            game.startGame(player2);
+            game.fireAtPosition(player1, new Position(0, 0));
+        }).toThrow('not your turn');
     });
 });

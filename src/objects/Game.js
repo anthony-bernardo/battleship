@@ -10,6 +10,8 @@ export default class Game{
             throw new Error('2 differents players needed');
         }
         this._stateOfGame = GameState.SETUP;
+        this._hits = 0;
+        this._turnAt = undefined;
         // players
         this._player1 = player1;
         this._player2 = player2;
@@ -38,7 +40,7 @@ export default class Game{
         this._shipsTypeToPlace[player.id][shipType] = this._shipsTypeToPlace[player.id][shipType] - 1;
     }
     playerSea(player){ return this._playersSea[player.id]; }
-    startGame(){
+    startGame(playerToStart){
         // check if players have placed all the ships
         Object.keys(this._shipsTypeToPlace[this._player1.id]).forEach((key, index) => {
             if(this._shipsTypeToPlace[this._player1.id][key] != 0){
@@ -53,10 +55,28 @@ export default class Game{
         });
         // change the state
         this._stateOfGame = GameState.STARTED;
+        if(playerToStart !== undefined){
+            this._playerCurrentlyPlaying = playerToStart;
+        }else{
+            // choose randomly first player to play
+            this._playerCurrentlyPlaying = (Math.floor(Math.random() * 2) == 1 ? this._player1 : this._player2);
+        }
     }
     fireAtPosition(player, position){
         if(this._stateOfGame !== GameState.STARTED){
             throw Error(`you cannot fire at position, game has not started`);
+        }
+        if(this._playerCurrentlyPlaying !== player){
+            throw Error('not your turn');
+        }
+        // hit on ennemy player sea
+        let playerToHit = (this._playerCurrentlyPlaying === this._player1 ? this._player2 : this._player1);
+        this._playersSea[playerToHit.id].fireAtPosition(position);
+        this._hits++;
+        // check if player turn expired
+        if(this._hits % GameSettings.nbHitByPlayer == 0){
+            // switch player turn
+            this._playerCurrentlyPlaying = (this._playerCurrentlyPlaying === this._player1 ? this._player2 : this._player1);
         }
     }
 }
