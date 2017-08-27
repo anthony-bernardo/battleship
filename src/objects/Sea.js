@@ -11,6 +11,7 @@ export default class Sea{
     get height(){ return this._height; }
     get seaMatrix() { return this._seaMatrix; }
     placeShip(ship, position){
+        const shipPlacedPositionArray = Array(ship.lenght);
         // fill the matrix with 1 depeding the ship size
         for(let i = 0; ship.lenght > i; i++){
             let positionX = position.x;
@@ -24,17 +25,30 @@ export default class Sea{
                     positionX = position.x + i;
                     break;
             }
+            const cellPosition = new Position(positionX, positionY);
             // check if ship is in bound
-            if(!this._checkShipInBound(ship, new Position(positionX, positionY))){
-                throw Error(`ship is out of the sea !`);
+            if(!this._checkShipInBound(ship, cellPosition)){
+                this._placeShipError('ship is out of the sea !', shipPlacedPositionArray);
             }
             // fill with the 1
             const cellToFill = this._seaMatrix[positionX][positionY];
             if(cellToFill === CellState.SHIP){
-                throw Error(`there is already a ship here !`);
+                this._placeShipError('there is already a ship here !', shipPlacedPositionArray);
             }
             this._seaMatrix[positionX][positionY] = CellState.SHIP; 
+            shipPlacedPositionArray[i] = cellPosition;
         }        
+    }
+    // TODO : private ?
+    _placeShipError(errorMessage, shipPlacedPositionArray){
+        // erase the previous cell flagged with 1
+        shipPlacedPositionArray.forEach(function(cellPosition) {
+            if(cellPosition == undefined){
+                return;
+            }
+            this._seaMatrix[cellPosition.x][cellPosition.y] = CellState.SEA;
+        }, this);
+        throw Error(errorMessage);
     }
     fireAtPosition(position){
         const cellValue = this._seaMatrix[position.x][position.y];
