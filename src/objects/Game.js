@@ -46,19 +46,18 @@ export default class Game{
         this._shipsTypeToPlace[player.id][shipType] = this._shipsTypeToPlace[player.id][shipType] - 1;
     }
     playerSea(player){ return this._playersSea[player.id]; }
+    didPlayerPlaceAllShips(player){
+        Object.keys(this._shipsTypeToPlace[player.id]).forEach((key, index) => {
+            if(this._shipsTypeToPlace[player.id][key] != 0){
+                throw new Error('The player has not placed all the ships');
+            }
+        });
+        return true;
+    }
     startGame(playerToStart){
         // check if players have placed all the ships
-        Object.keys(this._shipsTypeToPlace[this._player1.id]).forEach((key, index) => {
-            if(this._shipsTypeToPlace[this._player1.id][key] != 0){
-                throw new Error('The players have not placed all the ships');
-            }
-        });
-
-        Object.keys(this._shipsTypeToPlace[this._player2.id]).forEach((key, index) => {
-            if(this._shipsTypeToPlace[this._player2.id][key] != 0){
-                throw new Error('The players have not placed all the ships');
-            }
-        });
+        this.didPlayerPlaceAllShips(this._player1);
+        this.didPlayerPlaceAllShips(this._player2);
         // change the state
         this._stateOfGame = GameState.STARTED;
         if(playerToStart !== undefined){

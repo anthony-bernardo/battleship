@@ -103,7 +103,7 @@ describe('startGame()', () => {
             /// players2 miss the BIG 
 
             game.startGame();
-        }).toThrow('The players have not placed all the ships');
+        }).toThrow('The player has not placed all the ships');
     });
 
     test('at start, the game state must be SETUP', () => {
