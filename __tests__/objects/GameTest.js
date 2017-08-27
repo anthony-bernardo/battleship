@@ -18,20 +18,6 @@ beforeEach(() => {
     player1 = new Player(1001, 'Anthony');
     player2 = new Player(1002, 'Patrice');
     game = new Game(player1, player2, 10);
-    /*game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(2, 4)); // todo player has to place all ships
-    game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 1));
-    game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(2, 4)); // todo player has to place all ships
-    game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 1));
-    game.playerReady(player1);
-    game.playerReady(player2); // wait until all players are ready
-    game.whichPlayerTurn();
-    game.playerFirePosition(player1, new Position(0, 0));
-    game.playerFirePosition(player1, new Position(0, 0));
-    game.playerFirePosition(player1, new Position(0, 0));
-    game.playerFirePosition(player2, new Position(0, 0));
-    game.playerFirePosition(player2, new Position(0, 0));
-    game.playerFirePosition(player2, new Position(0, 0)); // todo player has x hit to make, then change state, player2 turn
-    */
 });
 
 describe('Game()', () => {

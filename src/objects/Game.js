@@ -15,7 +15,7 @@ export default class Game{
         this._nbSuccessfulFire = Array(2);
         this._nbSuccessfulFire[player1.id] = 0;
         this._nbSuccessfulFire[player2.id] = 0;
-        this._turnAt = undefined;
+        this._playerCurrentlyPlaying = undefined;
         // players
         this._player1 = player1;
         this._player2 = player2;
@@ -28,7 +28,8 @@ export default class Game{
         this._shipsTypeToPlace[player1.id] = Object.assign({}, GameSettings.shipsToPlace);
         this._shipsTypeToPlace[player2.id] = Object.assign({}, GameSettings.shipsToPlace);
     }
-    get state(){ return this._stateOfGame; }
+    get state() { return this._stateOfGame; }
+    get playerCurrentlyPlaying() { return this._playerCurrentlyPlaying; }
     placeShip(player, shipType, orientation, position){
         if(this._stateOfGame !== GameState.SETUP){
             throw Error(`you cannot place ship, game has started`);
