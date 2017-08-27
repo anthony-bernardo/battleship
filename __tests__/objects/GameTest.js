@@ -6,6 +6,7 @@ import Position from '../../src/objects/Position.js';
 import CellState from '../../src/objects/CellState.js';
 import Game from '../../src/objects/Game.js';
 import Player from '../../src/objects/Player.js';
+import GameState from '../../src/objects/GameState.js';
 
 let game;
 let sea;
@@ -140,7 +141,55 @@ describe('fireAtPosition()', () => {
         game.placeShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
         game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
     });
-    
+
+    test('when a player sink all ennemies ships, the game is over, and throw exception if try fire', () => {
+        expect(() => {
+            game.startGame(player1);
+
+            game.fireAtPosition(player1, new Position(0, 0));
+            game.fireAtPosition(player1, new Position(0, 1));
+            game.fireAtPosition(player1, new Position(0, 2));
+            
+            game.fireAtPosition(player2, new Position(0, 0));
+            game.fireAtPosition(player2, new Position(1, 0));
+            game.fireAtPosition(player2, new Position(0, 5));
+
+            game.fireAtPosition(player1, new Position(1, 0));
+            game.fireAtPosition(player1, new Position(1, 1));
+            game.fireAtPosition(player1, new Position(1, 2));
+            
+            game.fireAtPosition(player2, new Position(0, 6));
+            game.fireAtPosition(player2, new Position(0, 7));
+            game.fireAtPosition(player2, new Position(0, 8));
+
+            game.fireAtPosition(player1, new Position(2, 0));
+            game.fireAtPosition(player1, new Position(2, 1));
+            game.fireAtPosition(player1, new Position(2, 2));
+            
+            game.fireAtPosition(player2, new Position(0, 9));
+            game.fireAtPosition(player2, new Position(4, 4));
+            game.fireAtPosition(player2, new Position(4, 5));
+
+            game.fireAtPosition(player1, new Position(3, 0));
+            game.fireAtPosition(player1, new Position(3, 1));
+            game.fireAtPosition(player1, new Position(3, 2));
+
+            game.fireAtPosition(player2, new Position(4, 6));
+            game.fireAtPosition(player2, new Position(5, 3));
+            game.fireAtPosition(player2, new Position(6, 3));
+
+            game.fireAtPosition(player1, new Position(4, 0));
+            game.fireAtPosition(player1, new Position(4, 1));
+            game.fireAtPosition(player1, new Position(4, 2));
+
+            game.fireAtPosition(player2, new Position(7, 3));
+            // here the game is finish
+            // so the next fire will throw an exception
+            game.fireAtPosition(player2, new Position(7, 4));
+            
+        }).toThrow('the game is over');
+    });
+
     test('each player can fire 3 times', () => {
         expect(() => {
             game.startGame(player1);
@@ -168,5 +217,63 @@ describe('fireAtPosition()', () => {
             game.startGame(player2);
             game.fireAtPosition(player1, new Position(0, 0));
         }).toThrow('not your turn');
+    });
+});
+
+
+describe('state()', () => {
+    beforeEach(() => {
+        game.placeShip(player1, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player1, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player1, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+
+        game.placeShip(player2, ShipType.LITTLE, Orientation.VERTICAL, new Position(0, 0)); 
+        game.placeShip(player2, ShipType.MEDIUM, Orientation.HORIZONTAL, new Position(4, 4)); 
+        game.placeShip(player2, ShipType.MEDIUM, Orientation.VERTICAL, new Position(5, 3)); 
+        game.placeShip(player2, ShipType.BIG, Orientation.HORIZONTAL, new Position(0, 5)); 
+    });
+    test('when a player sink all ennemies ships, the game state must be ENDED', () => {
+        game.startGame(player1);
+
+        game.fireAtPosition(player1, new Position(0, 0));
+        game.fireAtPosition(player1, new Position(0, 1));
+        game.fireAtPosition(player1, new Position(0, 2));
+        
+        game.fireAtPosition(player2, new Position(0, 0));
+        game.fireAtPosition(player2, new Position(1, 0));
+        game.fireAtPosition(player2, new Position(0, 5));
+
+        game.fireAtPosition(player1, new Position(1, 0));
+        game.fireAtPosition(player1, new Position(1, 1));
+        game.fireAtPosition(player1, new Position(1, 2));
+        
+        game.fireAtPosition(player2, new Position(0, 6));
+        game.fireAtPosition(player2, new Position(0, 7));
+        game.fireAtPosition(player2, new Position(0, 8));
+
+        game.fireAtPosition(player1, new Position(2, 0));
+        game.fireAtPosition(player1, new Position(2, 1));
+        game.fireAtPosition(player1, new Position(2, 2));
+        
+        game.fireAtPosition(player2, new Position(0, 9));
+        game.fireAtPosition(player2, new Position(4, 4));
+        game.fireAtPosition(player2, new Position(4, 5));
+
+        game.fireAtPosition(player1, new Position(3, 0));
+        game.fireAtPosition(player1, new Position(3, 1));
+        game.fireAtPosition(player1, new Position(3, 2));
+
+        game.fireAtPosition(player2, new Position(4, 6));
+        game.fireAtPosition(player2, new Position(5, 3));
+        game.fireAtPosition(player2, new Position(6, 3));
+
+        game.fireAtPosition(player1, new Position(4, 0));
+        game.fireAtPosition(player1, new Position(4, 1));
+        game.fireAtPosition(player1, new Position(4, 2));
+
+        game.fireAtPosition(player2, new Position(7, 3));
+
+        expect(game.state).toBe(GameState.ENDED);
     });
 });

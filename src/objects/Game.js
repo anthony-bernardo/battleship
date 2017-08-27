@@ -3,6 +3,7 @@ import ShipType from './ShipType.js';
 import Sea from './Sea.js';
 import GameState from './GameState.js';
 import GameSettings from './GameSettings.js';
+import CellState from './CellState.js';
 
 export default class Game{
     constructor(player1, player2, seaSize){
@@ -11,6 +12,9 @@ export default class Game{
         }
         this._stateOfGame = GameState.SETUP;
         this._hits = 0;
+        this._nbSuccessfulFire = Array(2);
+        this._nbSuccessfulFire[player1.id] = 0;
+        this._nbSuccessfulFire[player2.id] = 0;
         this._turnAt = undefined;
         // players
         this._player1 = player1;
@@ -24,6 +28,7 @@ export default class Game{
         this._shipsTypeToPlace[player1.id] = Object.assign({}, GameSettings.shipsToPlace);
         this._shipsTypeToPlace[player2.id] = Object.assign({}, GameSettings.shipsToPlace);
     }
+    get state(){ return this._stateOfGame; }
     placeShip(player, shipType, orientation, position){
         if(this._stateOfGame !== GameState.SETUP){
             throw Error(`you cannot place ship, game has started`);
@@ -63,6 +68,9 @@ export default class Game{
         }
     }
     fireAtPosition(player, position){
+        if(this._stateOfGame == GameState.ENDED){
+            throw Error('the game is over');
+        }
         if(this._stateOfGame !== GameState.STARTED){
             throw Error(`you cannot fire at position, game has not started`);
         }
@@ -71,8 +79,16 @@ export default class Game{
         }
         // hit on ennemy player sea
         let playerToHit = (this._playerCurrentlyPlaying === this._player1 ? this._player2 : this._player1);
-        this._playersSea[playerToHit.id].fireAtPosition(position);
+        let fireResult = this._playersSea[playerToHit.id].fireAtPosition(position);
         this._hits++;
+        // if ship hitten 
+        if(fireResult === CellState.HITTEN_SHIP){
+            this._nbSuccessfulFire[player.id]++
+        }
+        // check if the player has sink all ships
+        if(this._nbSuccessfulFire[player.id] >= GameSettings.nbCellToHit){
+            this._stateOfGame = GameState.ENDED;
+        }
         // check if player turn expired
         if(this._hits % GameSettings.nbHitByPlayer == 0){
             // switch player turn
