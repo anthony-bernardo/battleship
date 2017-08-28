@@ -18,6 +18,6 @@ The game will be multiplayer at first time, and then I will adding some AI, to p
 
 # The first UGLY UI
 
-![first ui](https://github.com/xero88/battleship/blob/master/docs/screenshot_290817.png =250x)
+https://github.com/xero88/battleship/blob/master/docs/screenshot_290817.png
 
 Yeah it's ugly, but it's my baby <3
