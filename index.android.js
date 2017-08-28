@@ -9,61 +9,50 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  Image, TouchableHighlight,
   View
 } from 'react-native';
-import Sea from './src/objects/Sea.js';
-import Ship from './src/objects/Ship.js';
-import Position from './src/objects/Position.js';
-import Orientation from './src/objects/Orientation.js';
+import { Col, Row, Grid } from "react-native-easy-grid";
+import Game from './src/objects/Game.js';
+import Player from './src/objects/Player.js';
+import PlaceShips from './src/IA/PlaceShips.js';
 
 export default class BattleShip extends Component {
 
   constructor(){
     super();
-
-    const sea = new Sea(5, 5);
-    const ship1 = new Ship('Petit bateau', 5, Orientation.HORIZONTAL);
-
-    // place the boat at position 0, 1
-    sea.placeShip(ship1, new Position(4, 0)); 
-    console.log(sea.seaMatrix);
+    this.player1 = new Player(1001, 'Anthony');
+    this.player2 = new Player(1002, 'Ivan');
+    this.game = new Game(this.player1, this.player2, 10);
+    this.placeShipsHelper = new PlaceShips(this.game, this.player1);
+    this.placeShipsHelper.execute();
+    console.log(this.game.playerSea(this.player1).seaMatrix);
   }
 
   render() {
+    var cells = this.game.playerSea(this.player1).seaMatrix.map(function(row, index2){
+      var rows = row.map(function(cell, index){
+        if(cell == 1){
+          return <TouchableHighlight onPress={this._onPressButton} key={index}> 
+                  <Image source={require('./src/assets/boat.png')} style={{width: 35, height: 35}} /> 
+                </TouchableHighlight>;
+        }
+        if(cell == 0){
+          return <TouchableHighlight onPress={this._onPressButton} key={index}> 
+                  <Image source={require('./src/assets/empty.png')} style={{width: 35, height: 35}} /> 
+                </TouchableHighlight>;
+        }
+      })
+      return <Row key={index2}>
+              {rows}
+            </Row>;
+    })
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
+      <Grid style={{ backgroundColor: '#ADD8E6', height: 200 }}>
+        { cells }
+      </Grid>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
 
 AppRegistry.registerComponent('BattleShip', () => BattleShip);

@@ -16,7 +16,8 @@ export default class PlaceShips{
             for (let index = 0; index < nbShipToPlace; index++) {
                 this._randomlyPlaceShip(shipType);    
             }
-        });    
+        }); 
+        return this._game;   
     }
     // TODO: private
     _randomlyPlaceShip(shipType){
