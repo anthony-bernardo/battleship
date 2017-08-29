@@ -1,6 +1,7 @@
 import PlaceShips from '../../src/IA/PlaceShips.js';
 import Player from '../../src/objects/Player.js';
 import Game from '../../src/objects/Game.js';
+import CellState from '../../src/objects/CellState.js';
 
 let placeShips;
 let game;
@@ -20,12 +21,12 @@ describe('execute()', () => {
     expect(game.didPlayerPlaceAllShips(player1)).toBe(true);
   });
 
-  test('expect to see 13 cells on the sea after all ship places', () => {
+  test('expect to see 13 SHIP cells on the sea after all ship places', () => {
     placeShips.execute();
     let nbCells = 0;
     game.playerSea(player1).seaMatrix.map((row) => {
       row.map((cell) => {
-        if (cell === 1) {
+        if (cell.state === CellState.SHIP) {
           nbCells++;
         }
       });

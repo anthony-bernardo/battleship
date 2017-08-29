@@ -16,6 +16,7 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 import Game from './src/objects/Game.js';
 import Player from './src/objects/Player.js';
 import PlaceShips from './src/IA/PlaceShips.js';
+import ShipPart from './src/objects/ShipPart.js';
 
 export default class BattleShip extends Component {
 
@@ -26,18 +27,29 @@ export default class BattleShip extends Component {
     this.game = new Game(this.player1, this.player2, 10);
     this.placeShipsHelper = new PlaceShips(this.game, this.player1);
     this.placeShipsHelper.execute();
-    console.log(this.game.playerSea(this.player1).seaMatrix);
   }
 
   render() {
     var cells = this.game.playerSea(this.player1).seaMatrix.map(function(row, index2){
       var rows = row.map(function(cell, index){
-        if(cell == 1){
-          return <TouchableHighlight onPress={this._onPressButton} key={index}> 
-                  <Image source={require('./src/assets/boat.png')} style={{width: 35, height: 35}} /> 
-                </TouchableHighlight>;
+        if(cell.state == 1){
+          if(cell.shipPart == ShipPart.BOW){
+            return <TouchableHighlight onPress={this._onPressButton} key={index}> 
+            <Image source={require('./src/assets/water.png')} style={{width: 35, height: 35}} /> 
+            </TouchableHighlight>; 
+          }
+          else if(cell.shipPart == ShipPart.STERN){ 
+            return <TouchableHighlight onPress={this._onPressButton} key={index}> 
+            <Image source={require('./src/assets/water22.jpg')} style={{width: 35, height: 35}} /> 
+            </TouchableHighlight>;
+          }
+          else{
+            return <TouchableHighlight onPress={this._onPressButton} key={index}> 
+            <Image source={require('./src/assets/boat.png')} style={{width: 35, height: 35}} /> 
+            </TouchableHighlight>;
+          }
         }
-        if(cell == 0){
+        if(cell.state == 0){
           return <TouchableHighlight onPress={this._onPressButton} key={index}> 
                   <Image source={require('./src/assets/empty.png')} style={{width: 35, height: 35}} /> 
                 </TouchableHighlight>;

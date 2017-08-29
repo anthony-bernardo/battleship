@@ -1,6 +1,6 @@
 import GameSettings from '../objects/GameSettings.js';
-import Position from '../objects/Position.js';
-import Orientation from '../objects/Orientation.js';
+import Position from '../geospatial/Position.js'; 
+import Orientation from '../geospatial/Orientation.js'; 
 
 export default class PlaceShips {
     constructor(game, player) {
@@ -26,7 +26,7 @@ export default class PlaceShips {
         const randomY = Math.floor(Math.random() * 10);
         const randomPosition = new Position(randomX, randomY);
         try {
-            this._game.placeShip(this._player, shipType, randomOrientation, randomPosition);
+            this._game.placeShip(this._player, shipType, randomOrientation, randomPosition);    
         } catch (error) {
             this._randomlyPlaceShip(shipType); // retry recursivly
         }

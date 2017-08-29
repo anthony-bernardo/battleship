@@ -1,11 +1,18 @@
-import Orientation from './Orientation.js';
-import Position from './Position.js';
+import Orientation from '../geospatial/Orientation.js';
+import Position from '../geospatial/Position.js';
 import CellState from './CellState.js';
+import Cell from './Cell.js';
+import ShipPart from './ShipPart.js';
+
 export default class Sea {
     constructor(width, height) {
         this._witdh = width;
         this._height = height;
-        this._seaMatrix = Array(width).fill(0).map(() => Array(height).fill(0));
+        // sea matrix is filled with Cell objects
+        const createMatrix = (x, y) => Array.from({ length: x }, () =>
+            Array.from({ length: y }, () => new Cell())
+        );
+        this._seaMatrix = createMatrix(width, height);
     }
     get width() {
         return this._witdh;
@@ -18,8 +25,19 @@ export default class Sea {
     }
     placeShip(ship, position) {
         const shipPlacedPositionArray = Array(ship.lenght);
-        // fill the matrix with 1 depeding the ship size
+        // fill the matrix with Cell depeding the ship size
         for (let i = 0; ship.lenght > i; i++) {
+            // determine the ship part
+            let shipPart = ShipPart.DECK;
+            switch (i) {
+                case 0:
+                    shipPart = ShipPart.BOW;
+                    break;
+                case ship.lenght - 1:
+                    shipPart = ShipPart.STERN;
+                    break;
+            } // SASD
+            // set cell position
             let positionX = position.x;
             let positionY = position.y;
             switch (ship.orientation) {
@@ -36,36 +54,29 @@ export default class Sea {
             if (!this._checkShipInBound(ship, cellPosition)) {
                 this._placeShipError('ship is out of the sea !', shipPlacedPositionArray);
             }
-            // fill with the 1
+            // fill with a Ship Cell
             const cellToFill = this._seaMatrix[positionX][positionY];
-            if (cellToFill === CellState.SHIP) {
+            if (cellToFill.state === CellState.SHIP) { 
                 this._placeShipError('there is already a ship here !', shipPlacedPositionArray);
             }
-            this._seaMatrix[positionX][positionY] = CellState.SHIP;
+            cellToFill.placeShip(ship.orientation, shipPart);
+            this._seaMatrix[positionX][positionY] = cellToFill;
             shipPlacedPositionArray[i] = cellPosition;
         }
-    }
-    // TODO : private ?
-    _placeShipError(errorMessage, shipPlacedPositionArray) {
-        // erase the previous cell flagged with 1
-        shipPlacedPositionArray.forEach(function (cellPosition) {
-            if (cellPosition == undefined) {
-                return;
-            }
-            this._seaMatrix[cellPosition.x][cellPosition.y] = CellState.SEA;
-        }, this);
-        throw Error(errorMessage);
+        
     }
     fireAtPosition(position) {
-        const cellValue = this._seaMatrix[position.x][position.y];
-        switch (cellValue) {
+        const hittenCell = this._seaMatrix[position.x][position.y];
+        switch (hittenCell.state) {
             // there is a ship
             case CellState.SHIP:
-                this._seaMatrix[position.x][position.y] = CellState.HITTEN_SHIP;
+                hittenCell.destroy();
+                this._seaMatrix[position.x][position.y] = hittenCell;
                 return CellState.HITTEN_SHIP;
                 // there is nothing
             case CellState.SEA:
-                this._seaMatrix[position.x][position.y] = CellState.HITTEN_SEA;
+                hittenCell.miss();
+                this._seaMatrix[position.x][position.y] = hittenCell;
                 return CellState.HITTEN_SEA;
                 // there is a previously hit cell
             case CellState.HITTEN_SEA:
@@ -73,6 +84,19 @@ export default class Sea {
             case CellState.HITTEN_SHIP:
                 throw Error('you have already hit this position');
         }
+    }
+    // Private methods     
+    _placeShipError(errorMessage, shipPlacedPositionArray) {
+        // erase the previous cell flagged with 1
+        shipPlacedPositionArray.forEach(function (cellPosition) {
+            if (cellPosition == undefined) {
+                return;
+            }
+            let cell = this._seaMatrix[cellPosition.x][cellPosition.y];
+            cell.reset()
+            this._seaMatrix[cellPosition.x][cellPosition.y] = cell;
+        }, this);
+        throw Error(errorMessage);
     }
     _checkShipInBound(ship, position) {
         switch (ship.orientation) {

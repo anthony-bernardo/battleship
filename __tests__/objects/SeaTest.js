@@ -1,7 +1,7 @@
 import Sea from '../../src/objects/Sea.js';
 import Ship from '../../src/objects/Ship.js';
-import Orientation from '../../src/objects/Orientation.js';
-import Position from '../../src/objects/Position.js';
+import Orientation from '../../src/geospatial/Orientation.js';
+import Position from '../../src/geospatial/Position.js';
 import CellState from '../../src/objects/CellState.js';
 
 let sea;

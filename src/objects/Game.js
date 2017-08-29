@@ -10,11 +10,14 @@ export default class Game {
         if (player1.id == player2.id) {
             throw new Error('2 differents players needed');
         }
+        // state
         this._stateOfGame = GameState.SETUP;
-        this._hits = 0;
-        this._nbSuccessfulFire = Array(2);
-        this._nbSuccessfulFire[player1.id] = 0;
-        this._nbSuccessfulFire[player2.id] = 0;
+        // hits
+        this._nbAllHits = 0;
+        this._nbSuccessfulHits = Array(2);
+        this._nbSuccessfulHits[player1.id] = 0;
+        this._nbSuccessfulHits[player2.id] = 0;
+        // player currently playing
         this._playerCurrentlyPlaying = undefined;
         // players
         this._player1 = player1;
@@ -47,7 +50,7 @@ export default class Game {
         ship = shipFactory.create();
         // place ship
         this._playersSea[player.id].placeShip(ship, position);
-        this._shipsTypeToPlace[player.id][shipType] = this._shipsTypeToPlace[player.id][shipType] - 1;
+        this._shipsTypeToPlace[player.id][shipType] -= 1;
     }
     playerSea(player) {
         return this._playersSea[player.id];
@@ -86,17 +89,17 @@ export default class Game {
         // hit on ennemy player sea
         let playerToHit = (this._playerCurrentlyPlaying === this._player1 ? this._player2 : this._player1);
         let fireResult = this._playersSea[playerToHit.id].fireAtPosition(position);
-        this._hits++;
+        this._nbAllHits++;
         // if ship hitten 
         if (fireResult === CellState.HITTEN_SHIP) {
-            this._nbSuccessfulFire[player.id]++
+            this._nbSuccessfulHits[player.id]++;
         }
         // check if the player has sink all ships
-        if (this._nbSuccessfulFire[player.id] >= GameSettings.nbCellToHit) {
+        if (this._nbSuccessfulHits[player.id] >= GameSettings.nbCellToHit) {
             this._stateOfGame = GameState.ENDED;
         }
         // check if player turn expired
-        if (this._hits % GameSettings.nbHitByPlayer == 0) {
+        if (this._nbAllHits % GameSettings.nbHitByPlayer == 0) {
             // switch player turn
             this._playerCurrentlyPlaying = (this._playerCurrentlyPlaying === this._player1 ? this._player2 : this._player1);
         }
