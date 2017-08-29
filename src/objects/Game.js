@@ -5,9 +5,9 @@ import GameState from './GameState.js';
 import GameSettings from './GameSettings.js';
 import CellState from './CellState.js';
 
-export default class Game{
-    constructor(player1, player2, seaSize){
-        if(player1.id == player2.id){
+export default class Game {
+    constructor(player1, player2, seaSize) {
+        if (player1.id == player2.id) {
             throw new Error('2 differents players needed');
         }
         this._stateOfGame = GameState.SETUP;
@@ -28,14 +28,18 @@ export default class Game{
         this._shipsTypeToPlace[player1.id] = Object.assign({}, GameSettings.shipsToPlace);
         this._shipsTypeToPlace[player2.id] = Object.assign({}, GameSettings.shipsToPlace);
     }
-    get state() { return this._stateOfGame; }
-    get playerCurrentlyPlaying() { return this._playerCurrentlyPlaying; }
-    placeShip(player, shipType, orientation, position){
-        if(this._stateOfGame !== GameState.SETUP){
+    get state() {
+        return this._stateOfGame;
+    }
+    get playerCurrentlyPlaying() {
+        return this._playerCurrentlyPlaying;
+    }
+    placeShip(player, shipType, orientation, position) {
+        if (this._stateOfGame !== GameState.SETUP) {
             throw Error(`you cannot place ship, game has started`);
         }
         // check if this shipType can be placed
-        if(this._shipsTypeToPlace[player.id][shipType] == 0){
+        if (this._shipsTypeToPlace[player.id][shipType] == 0) {
             throw new Error('player cannot place this boat on more time');
         }
         // create ship
@@ -45,36 +49,38 @@ export default class Game{
         this._playersSea[player.id].placeShip(ship, position);
         this._shipsTypeToPlace[player.id][shipType] = this._shipsTypeToPlace[player.id][shipType] - 1;
     }
-    playerSea(player){ return this._playersSea[player.id]; }
-    didPlayerPlaceAllShips(player){
+    playerSea(player) {
+        return this._playersSea[player.id];
+    }
+    didPlayerPlaceAllShips(player) {
         Object.keys(this._shipsTypeToPlace[player.id]).forEach((key, index) => {
-            if(this._shipsTypeToPlace[player.id][key] != 0){
+            if (this._shipsTypeToPlace[player.id][key] != 0) {
                 throw new Error('The player has not placed all the ships');
             }
         });
         return true;
     }
-    startGame(playerToStart){
+    startGame(playerToStart) {
         // check if players have placed all the ships
         this.didPlayerPlaceAllShips(this._player1);
         this.didPlayerPlaceAllShips(this._player2);
         // change the state
         this._stateOfGame = GameState.STARTED;
-        if(playerToStart !== undefined){
+        if (playerToStart !== undefined) {
             this._playerCurrentlyPlaying = playerToStart;
-        }else{
+        } else {
             // choose randomly first player to play
             this._playerCurrentlyPlaying = (Math.floor(Math.random() * 2) == 1 ? this._player1 : this._player2);
         }
     }
-    fireAtPosition(player, position){
-        if(this._stateOfGame == GameState.ENDED){
+    fireAtPosition(player, position) {
+        if (this._stateOfGame == GameState.ENDED) {
             throw Error('the game is over');
         }
-        if(this._stateOfGame !== GameState.STARTED){
+        if (this._stateOfGame !== GameState.STARTED) {
             throw Error(`you cannot fire at position, game has not started`);
         }
-        if(this._playerCurrentlyPlaying !== player){
+        if (this._playerCurrentlyPlaying !== player) {
             throw Error('not your turn');
         }
         // hit on ennemy player sea
@@ -82,15 +88,15 @@ export default class Game{
         let fireResult = this._playersSea[playerToHit.id].fireAtPosition(position);
         this._hits++;
         // if ship hitten 
-        if(fireResult === CellState.HITTEN_SHIP){
+        if (fireResult === CellState.HITTEN_SHIP) {
             this._nbSuccessfulFire[player.id]++
         }
         // check if the player has sink all ships
-        if(this._nbSuccessfulFire[player.id] >= GameSettings.nbCellToHit){
+        if (this._nbSuccessfulFire[player.id] >= GameSettings.nbCellToHit) {
             this._stateOfGame = GameState.ENDED;
         }
         // check if player turn expired
-        if(this._hits % GameSettings.nbHitByPlayer == 0){
+        if (this._hits % GameSettings.nbHitByPlayer == 0) {
             // switch player turn
             this._playerCurrentlyPlaying = (this._playerCurrentlyPlaying === this._player1 ? this._player2 : this._player1);
         }

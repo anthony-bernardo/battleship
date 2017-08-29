@@ -8,9 +8,9 @@ let sea;
 let littleShip;
 let bigShip;
 beforeEach(() => {
- sea = new Sea(5, 5);
- littleShip = new Ship('Petit bateau', 2, Orientation.HORIZONTAL);
- bigShip = new Ship('Porte-avion', 5, Orientation.VERTICAL);
+  sea = new Sea(5, 5);
+  littleShip = new Ship('Petit bateau', 2, Orientation.HORIZONTAL);
+  bigShip = new Ship('Porte-avion', 5, Orientation.VERTICAL);
 });
 
 describe('placeShip()', () => {

@@ -25,7 +25,7 @@ describe('execute()', () => {
     let nbCells = 0;
     game.playerSea(player1).seaMatrix.map((row) => {
       row.map((cell) => {
-        if(cell === 1){
+        if (cell === 1) {
           nbCells++;
         }
       });
